@@ -3,42 +3,44 @@ import json
 from datetime import datetime
 
 def fetch_all_rates():
-    print("正在獲取多國貨幣匯率數據...")
-    # 定義你需要的幣別清單
-    target_currencies = ["USD", "EUR", "GBP", "SGD", "JPY", "KRW", "HKD"]
+    # 使用穩定且免 Key 的 API 源
+    url = "https://open.er-api.com/v6/latest/TWD"
     
     try:
-        # 獲取最新匯率 (以 TWD 為基準，這樣直接拿到的就是 1外幣=多少台幣)
-        # 註：這裡改用 TWD 為 base 會更直覺
-        response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
+        response = requests.get(url)
         data = response.json()
-        usd_to_twd = data['rates']['TWD']
         
-        rates_dict = {}
-        for cur in target_currencies:
-            # 換算出各幣別對台幣的匯率 (透過 USD 中轉計算)
-            # 公式：1 外幣 = (1/該幣對USD匯率) * USD對TWD匯率
-            rate_to_usd = data['rates'][cur]
-            twd_rate = usd_to_twd / rate_to_usd
-            
-            rates_dict[cur] = {
-                "visa": round(twd_rate, 4),
-                "mastercard": round(twd_rate * 1.001, 4) # 模擬 Mastercard 稍微高一點點的匯率
+        if data["result"] == "success":
+            rates = data["rates"]
+            # 整理成：1 外幣 = 多少 TWD (所以是用 1 除以該幣別對 TWD 的匯率)
+            processed_rates = {
+                "USD": round(1 / rates["USD"], 4),
+                "JPY": round(1 / rates["JPY"], 4),
+                "EUR": round(1 / rates["EUR"], 4),
+                "GBP": round(1 / rates["GBP"], 4),
+                "HKD": round(1 / rates["HKD"], 4),
+                "KRW": round(1 / rates["KRW"], 4),
+                "CNY": round(1 / rates["CNY"], 4)
             }
-        
-        result = {
-            "update_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            "rates": rates_dict
-        }
-        
-        with open('rates.json', 'w') as f:
-            json.dump(result, f)
             
-        print("成功更新所有幣別匯率！")
-        return True
+            output = {
+                "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "rates": processed_rates
+            }
+            
+            # 儲存到本地 rates.json
+            with open('rates.json', 'w', encoding='utf-8') as f:
+                json.dump(output, f, indent=4, ensure_ascii=False)
+            return True
     except Exception as e:
-        print(f"發生錯誤: {e}")
+        print(f"抓取失敗: {e}")
         return False
+    return False
 
+# 讓你在終端機打 python get_rates.py 也能直接測試
 if __name__ == "__main__":
-    fetch_all_rates()
+    print("正在手動抓取匯率...")
+    if fetch_all_rates():
+        print("✅ 成功！已更新 rates.json")
+    else:
+        print("❌ 失敗，請檢查網路")
