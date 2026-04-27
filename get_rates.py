@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 def fetch_all_rates():
-    # 使用穩定且免 Key 的 API 源
+    # 使用穩定且免 Key 的 API 源 (Open Exchange Rates API 鏡像)
     url = "https://open.er-api.com/v6/latest/TWD"
     
     try:
@@ -37,10 +37,5 @@ def fetch_all_rates():
         return False
     return False
 
-# 讓你在終端機打 python get_rates.py 也能直接測試
 if __name__ == "__main__":
-    print("正在手動抓取匯率...")
-    if fetch_all_rates():
-        print("✅ 成功！已更新 rates.json")
-    else:
-        print("❌ 失敗，請檢查網路")
+    fetch_all_rates()
