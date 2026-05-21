@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>出國試算小幫手</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐰</text></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="card hero">
+      <div>
+        <h1>✈️ 出國試算小幫手</h1>
+        <p class="caption">晃晃悠悠算一下⋯刷卡和領現都變得更清楚，旅途中少一點緊張感。</p>
+      </div>
+      <button type="button" class="btn" id="btn-update">⭐ 更新匯率</button>
+    </header>
+
+    <p id="empty-state" class="alert hidden">
+      你好呀～請先按右上角的「⭐ 更新匯率」，我們再一起試算 ♪
+    </p>
+
+    <main id="app-main" class="hidden">
+      <p class="meta" id="last-update">匯率基準最後更新：—</p>
+
+      <nav class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="card" role="tab">💳 在海外刷卡 · 吃吃買買</button>
+        <button type="button" class="tab" data-tab="atm" role="tab">🏧 ATM 乖乖領現</button>
+      </nav>
+
+      <section id="panel-card" class="panel active" role="tabpanel">
+        <div class="card">
+          <h2>刷卡成本設定</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label for="card-markup">銀行手續費 (%)</label>
+              <input type="number" id="card-markup" value="1.5" step="0.1" min="0" />
+            </div>
+            <div class="field">
+              <label for="card-adj">匯率微調 (%)</label>
+              <input type="number" id="card-adj" value="0" step="0.05" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>開始算算看 ✨</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label for="card-buy">商品標價幣別</label>
+              <select id="card-buy"></select>
+            </div>
+            <div class="field">
+              <label for="card-pay">結帳扣款幣別</label>
+              <select id="card-pay"></select>
+            </div>
+          </div>
+          <div class="grid-2" style="margin-top: 1rem">
+            <div class="field">
+              <label for="card-amount" id="card-amount-label">標價金額 (JPY)</label>
+              <input type="number" id="card-amount" value="1000" step="1" min="0" />
+            </div>
+            <div class="metric">
+              <div class="metric-label">預計帳單金額</div>
+              <div class="metric-value" id="card-total">—</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-atm" class="panel" role="tabpanel">
+        <div class="card">
+          <h2>取款成本設定</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label for="atm-pct">百分比手續費 (%)</label>
+              <input type="number" id="atm-pct" value="1.5" step="0.1" min="0" />
+            </div>
+            <div class="field">
+              <label for="atm-adj">現鈔賣出價調整 (%)</label>
+              <input type="number" id="atm-adj" value="1" step="0.1" min="0" />
+            </div>
+          </div>
+          <div class="field" style="margin-top: 1rem">
+            <label for="atm-fix">固定手續費（直接加在扣款總額）</label>
+            <input type="number" id="atm-fix" value="0" step="1" min="0" />
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>開始算算看 ✨</h2>
+          <div class="grid-2">
+            <div class="field">
+              <label for="atm-get">領出來的幣別</label>
+              <select id="atm-get"></select>
+            </div>
+            <div class="field">
+              <label for="atm-acc">帳戶扣款幣別</label>
+              <select id="atm-acc"></select>
+            </div>
+          </div>
+          <div class="grid-2" style="margin-top: 1rem">
+            <div class="field">
+              <label for="atm-amount" id="atm-amount-label">我要領多少 (JPY)</label>
+              <input type="number" id="atm-amount" value="10000" step="1" min="0" />
+            </div>
+            <div class="metric">
+              <div class="metric-label">帳戶扣款總計</div>
+              <div class="metric-value" id="atm-total">—</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="divider" />
+
+      <details class="help">
+        <summary>📖 看不懂欄位？點我打開小抄 ♪</summary>
+        <div class="help-body">
+          <h3>💳 在海外刷卡 · 吃吃買買</h3>
+          <ul>
+            <li><strong>銀行手續費 (%)</strong>：國際信用卡組織與銀行收取的費用，台灣一般卡多為 <strong>1.5%</strong>。</li>
+            <li><strong>匯率微調 (%)</strong>：API 為市場中間價。組織（VISA/Master）匯率通常略貴，建議可填 <strong>0.1%~0.2%</strong> 增加準確度，VISA 大約是 -0.07，MASTERCARD 大約是 0.025。</li>
+            <li><strong>標價金額</strong>：商店標籤上的價格。</li>
+            <li><strong>預計帳單金額</strong>：您下個月帳單上會出現的扣款金額。</li>
+          </ul>
+          <h3>🏧 ATM 乖乖領現</h3>
+          <ul>
+            <li><strong>百分比手續費 (%)</strong>：國際提款通常會按金額收取的比例費用，常見為 <strong>1.5%</strong>。</li>
+            <li><strong>現鈔賣出價調整 (%)</strong>：反映銀行「現鈔匯率」比「網路匯率」貴的部分。領現鈔通常較貴，建議填 <strong>1.0%~2.0%</strong>，VISA 大約是 0.165，MASTERCARD 大約是 0.185。</li>
+            <li><strong>固定手續費</strong>：銀行按次收取的固定費用（例如每筆 75 或 100 元），直接計入扣款總額。</li>
+            <li><strong>帳戶扣款總計</strong>：為了領這筆現鈔，您戶頭裡總共會減少的金額。</li>
+          </ul>
+          <p class="help-foot" id="help-foot">數據更新來源：Open Exchange API</p>
+        </div>
+      </details>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
