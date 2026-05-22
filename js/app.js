@@ -23,6 +23,7 @@ const els = {
   emptyState: document.getElementById("empty-state"),
   lastUpdate: document.getElementById("last-update"),
   btnUpdate: document.getElementById("btn-update"),
+  btnReload: document.getElementById("btn-reload"),
   toast: document.getElementById("toast"),
   helpFoot: document.getElementById("help-foot"),
   tabs: document.querySelectorAll(".tab"),
@@ -205,7 +206,15 @@ function bindInputs() {
   });
 }
 
+/** 強制重新載入頁面（略過 iOS 主畫面捷徑的快取） */
+function reloadPageFresh() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("_", String(Date.now()));
+  window.location.replace(url.href);
+}
+
 els.btnUpdate.addEventListener("click", updateRatesFromApi);
+els.btnReload.addEventListener("click", reloadPageFresh);
 initTabs();
 bindInputs();
 initCurrencySelects();

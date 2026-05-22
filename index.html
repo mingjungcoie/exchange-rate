@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>出國試算小幫手</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐰</text></svg>" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=3" />
 </head>
 <body>
   <div class="page">
@@ -14,7 +17,10 @@
         <h1>✈️ 出國試算小幫手</h1>
         <p class="caption">晃晃悠悠算一下⋯刷卡和領現都變得更清楚，旅途中少一點緊張感。</p>
       </div>
-      <button type="button" class="btn" id="btn-update">⭐ 更新匯率</button>
+      <div class="hero-actions">
+        <button type="button" class="btn" id="btn-update">⭐ 更新匯率</button>
+        <button type="button" class="btn btn-ghost" id="btn-reload" title="重新載入最新網頁（主畫面捷徑用）">🔄 重新整理</button>
+      </div>
     </header>
 
     <p id="empty-state" class="alert hidden">
@@ -157,6 +163,6 @@
   </div>
 
   <div id="toast" class="toast" aria-live="polite"></div>
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=3"></script>
 </body>
 </html>
