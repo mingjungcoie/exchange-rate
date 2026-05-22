@@ -1,6 +1,6 @@
 const RATES_API_URL = "https://open.er-api.com/v6/latest/TWD";
 const STORAGE_KEY = "exchange_rate_cache";
-const CURRENCY_CODES = ["USD", "JPY", "EUR", "GBP", "HKD", "KRW", "CNY"];
+const CURRENCY_CODES = ["USD", "JPY", "EUR", "GBP", "HKD", "SGD", "KRW", "CNY"];
 
 export function formatDateTime(date = new Date()) {
   const pad = (n) => String(n).padStart(2, "0");
