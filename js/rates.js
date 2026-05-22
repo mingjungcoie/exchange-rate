@@ -1,6 +1,7 @@
 const RATES_API_URL = "https://open.er-api.com/v6/latest/TWD";
 const STORAGE_KEY = "exchange_rate_cache";
-const CURRENCY_CODES = ["USD", "JPY", "EUR", "GBP", "HKD", "SGD", "KRW", "CNY"];
+export const CURRENCY_CODES = ["USD", "JPY", "EUR", "GBP", "HKD", "SGD", "KRW", "CNY"];
+export const SUPPORTED_CURRENCIES = [...CURRENCY_CODES, "TWD"];
 
 export function formatDateTime(date = new Date()) {
   const pad = (n) => String(n).padStart(2, "0");
@@ -68,6 +69,6 @@ export function saveCachedRates(payload) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
 
-export function sortedCurrencies(rates) {
-  return Object.keys(rates).sort();
+export function sortedCurrencies() {
+  return [...SUPPORTED_CURRENCIES].sort();
 }

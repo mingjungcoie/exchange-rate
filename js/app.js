@@ -6,6 +6,13 @@ import {
   sortedCurrencies,
 } from "./rates.js";
 
+const DEFAULT_SELECTS = {
+  cardBuy: "JPY",
+  cardPay: "TWD",
+  atmGet: "JPY",
+  atmAcc: "USD",
+};
+
 const state = {
   rates: null,
   lastUpdate: "",
@@ -74,11 +81,11 @@ function applyRates(payload) {
   saveCachedRates(payload);
   updateMeta();
 
-  const currencies = sortedCurrencies(state.rates);
-  fillSelect(els.cardBuy, currencies, "JPY");
-  fillSelect(els.cardPay, currencies, "TWD");
-  fillSelect(els.atmGet, currencies, "JPY");
-  fillSelect(els.atmAcc, currencies, "USD");
+  const currencies = sortedCurrencies();
+  fillSelect(els.cardBuy, currencies, DEFAULT_SELECTS.cardBuy);
+  fillSelect(els.cardPay, currencies, DEFAULT_SELECTS.cardPay);
+  fillSelect(els.atmGet, currencies, DEFAULT_SELECTS.atmGet);
+  fillSelect(els.atmAcc, currencies, DEFAULT_SELECTS.atmAcc);
 
   setAppVisible(true);
   recalcAll();
@@ -128,18 +135,35 @@ function recalcAll() {
   recalcAtm();
 }
 
+function initCurrencySelects() {
+  const currencies = sortedCurrencies();
+  fillSelect(els.cardBuy, currencies, DEFAULT_SELECTS.cardBuy);
+  fillSelect(els.cardPay, currencies, DEFAULT_SELECTS.cardPay);
+  fillSelect(els.atmGet, currencies, DEFAULT_SELECTS.atmGet);
+  fillSelect(els.atmAcc, currencies, DEFAULT_SELECTS.atmAcc);
+}
+
 async function loadInitialRates() {
+  let fallback = null;
+  try {
+    fallback = await fetchRatesFromFile();
+  } catch {
+    /* rates.json 不可用時仍保留選單 */
+  }
+
   const cached = loadCachedRates();
   if (cached) {
-    applyRates(cached);
+    applyRates({
+      last_updated: cached.last_updated,
+      rates: { ...(fallback?.rates ?? {}), ...cached.rates, TWD: 1.0 },
+    });
     return;
   }
-  try {
-    const fromFile = await fetchRatesFromFile();
-    applyRates(fromFile);
-  } catch {
-    setAppVisible(false);
+  if (fallback) {
+    applyRates(fallback);
+    return;
   }
+  setAppVisible(false);
 }
 
 async function updateRatesFromApi() {
@@ -184,4 +208,5 @@ function bindInputs() {
 els.btnUpdate.addEventListener("click", updateRatesFromApi);
 initTabs();
 bindInputs();
+initCurrencySelects();
 loadInitialRates();
